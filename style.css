@@ -1,0 +1,13 @@
+/*Vamos estilizar a página*/
+body{
+    /*Espaçamento externo*/
+    margin: 0;
+    /*Espaçamento interno*/
+    padding: 0;
+}
+
+/*Vamos estilizar a tela de jogo*/
+canvas{
+    /*Vamos definir o tipo de comportamento da tela para ocupar toda a largura da tela*/
+    display: block;
+}
