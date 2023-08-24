@@ -17,9 +17,20 @@ var cloudImage;
 //Uma para guardar o sprite obstacle
 var obstacle;
 
-//seis variáveis para guardar as imagens dos obstaculos
+//Seis variáveis para guardar as imagens dos obstaculos
 var obstacle1, obstacle2, obstacle3, obstacle4, obstacle5, obstacle6;
 
+//Uma para armazenar o placar 
+var score;
+
+//Uma para guardar o estado do jogo
+var gameState= PLAY;
+
+//Uma para guardar o estago jogando
+var PLAY  = 1;
+
+//Uma para guardar o estago fim
+var END = 0;
 
 
 //Vamos definir uma função que carrega ativos
@@ -77,48 +88,73 @@ function setup() {
     //Vamos tornar o sprite invisivel com a ajuda da função visible
     invisibleGround.visible = false;
 
+    //vamos atribuir ao placar um valor 
+    score = 0;
 }
 
 //Vamos definir uma função que é executada continuamente (não para)
 function draw(){
 
     //Vamos definir um fundo
-    background("white");
+    background(180);
 
-    //Vamos definir uma condição para o Trex pular
-    //Se a tecla espaço for pressionada
-    if(keyDown("space")){
-        //Vamos definir uma velocidade Y negativa
-        trex.velocityY = -10; 
-    }
+    //Vamos exibir o placar na tela
+    text("Pontuação: "+ score, 500, 50);
 
-    //Vamos definir uma gravidade atribuindo continuamente uma velocidade positiva
-    trex.velocityY = trex.velocityY + 0.5;  
     
-    //Vamos impedir que o Trex caia fazendo com que ele colida no chão
-    trex.collide(ground);
-    trex.collide(invisibleGround);
+    gameState =PLAY;        
 
-    //Vamos mover o chão
-    ground.velocityX = -2;
+    //Vamos verificar se o estado do jogo é PLAY
+    if(gameState === PLAY){
 
-    //Vamos criar uma condição para não deixar o chão sumir
-    //Se a posição x do chão for menor que 0
-    if(ground.x<0)
-    {
-        //mude a posição x do chão para aa largura da tela dividido por 2
-        ground.x = ground.width/2;
+        //Vamos mover o chão
+        ground.velocityX = -2;
+
+        //Vamos aumentar o placar a cada 60 frames
+        score = score + Math.round(frameCount/60);
+
+        //Vamos criar uma condição para não deixar o chão sumir
+        //Se a posição x do chão for menor que 0
+        if(ground.x<0)
+        {
+            //Mude a posição x do chão para aa largura da tela dividido por 2
+            ground.x = ground.width/2;
+        }
+
+        //Vamos definir uma condição para o Trex pular
+        //Se a tecla espaço for pressionada e a posição Y dele for mior   ou igual a 100
+        if(keyDown("space") && trex.y>=150){
+            //Vamos definir uma velocidade Y negativa  
+            trex.velocityY = -10; 
+        }
+        //Vamos definir uma gravidade atribuindo continuamente uma velocidade positiva
+        trex.velocityY = trex.velocityY + 0.5; 
+
+
+        //Vamos impedir que o Trex caia fazendo com que ele colida no chão
+        trex.collide(invisibleGround);
+
+        //Vamos chamar a função que desenha os obstaculos
+        spawnObstacles();
+
+        //Vamos chamar a função que desenha todos os sprites na tela de jogo
+        drawSprites();
+
+
+    }
+    //Caso a condição anterior seja falsa e o estado do jogo seja END
+    else if(gameState === END){
+
+        //Vamos parar a velocidade do chão
+        ground.velocityX = 0;
+
+        
     }
 
     //Vamos chamar a função que desenha as nuvens
     spawnClouds();
     console.log(frameCount);
 
-    //Vamos chamar a função que desenha os obstaculos
-    spawnObstacles();
-
-    //Vamos chamar a função que desenha todos os sprites na tela de jogo
-    drawSprites();
 }
 
 //Vamos definir uma função que quando for chamada irá desenhar nuvens
