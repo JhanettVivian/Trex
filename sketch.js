@@ -50,6 +50,9 @@ var gameOver;
 //Uma para o sprite restart
 var restart;
 
+//Para carregar os efeitos sonoros
+var jumpSound , checkPointSound, dieSound;
+
 //Vamos definir uma função que carrega ativos
 function preload() {
   //Vamos carregar na variável trex_running todas as imagens do Trex com a ajuda da função loadAnimation()
@@ -79,6 +82,11 @@ function preload() {
 
   //Vamos carregar a imagem do trex depois da colisão
   trex_collided = loadImage("./Img/trex_collided.png");
+
+  //Vamos carregar as musicas nas variáveis
+  jumpSound = loadSound("./Music/jump.mp3");
+  dieSound = loadSound("./Music/die.mp3");
+  checkPointSound = loadSound("./Music/checkPoint.mp3");
 }
 
 //Vamos definir uma função que é executada apenas uma vez
@@ -100,7 +108,7 @@ function setup() {
   ground = createSprite(200, 180, 400, 7);
 
   //Vamos adicionar ao sprite ground a animação que está na groundImage com a ajuda da função addAnimation("nome_da_animação", frames)
-  ground.addAnimation("running", groundImage);
+  ground.addAnimation("ground", groundImage);
 
   //Vamos mudar a posição x do chão para aa largura da tela dividido por 2
   ground.x = ground.width / 2;
@@ -157,8 +165,11 @@ function draw() {
     gameOver.visible = false;
     restart.visible = false;
 
+    //vamos aumentar a velocidade do solo em 3x a cada 100 pontos
+    ground.velocityX = -(4+3 * score/100);
+
     //Vamos mover o chão
-    ground.velocityX = -4;
+    //ground.velocityX = -4;
 
     //Vamos aumentar o placar a cada 60 frames
     score = score + Math.round(frameCount / 60);
@@ -173,9 +184,15 @@ function draw() {
     //Vamos definir uma condição para o Trex pular
     //Se a tecla espaço for pressionada e a posição Y dele for mior   ou igual a 100
     if (keyDown("space") && trex.y >= 150) {
+
       //Vamos definir uma velocidade Y negativa
       trex.velocityY = -12;
+
+      //Vamos tocar a musica
+      jumpSound.play();
     }
+
+
     //Vamos definir uma gravidade atribuindo continuamente uma velocidade positiva
     trex.velocityY = trex.velocityY + 0.8;
 
@@ -187,9 +204,24 @@ function draw() {
 
     //Vamos verificar se um obstaculo está tocando no Trex a partir do grupo de obstaculos
     if (obstaclesGroup.isTouching(trex)) {
+
       //Vamos mudar o estado do jogo para fim
       gameState = END;
+
+      //Vamos tocar a musica
+      dieSound.play();
     }
+
+
+    //Condição para verificar se o placar é maior que zero e se o placar é divisivel por 100
+    //Assim a cada 100 pontos ele toca uma musica
+    if(score>0 && score%100 ===0){
+      //Vamos tocar musica
+      checkPointSound.play();
+    }
+
+    
+
   } else if (gameState === END) {
     //vamos tornar visivel os sprites
     gameOver.visible = true;
@@ -261,8 +293,11 @@ function spawnObstacles() {
     //Vamos criar um sprite para o obstaculo com uma posição inical de x = 600px, y = 165px, largura de 10px e altura de 40px
     obstacle = createSprite(600, 165, 10, 40);
 
+    //Vamos aumentar a velocidade dos obstaculos a cada 100 pontos
+    obstacle.velocityX = -(6+score/100);
+
     //vamos definir uma velocidade horizontal para o sprite obstacle
-    obstacle.velocityX = -5;
+    //obstacle.velocityX = -6;
 
     //Vamos definir um tamanho para o sprite obstacle
     obstacle.scale = 0.4;
